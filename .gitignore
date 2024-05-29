@@ -1,0 +1,8 @@
+# emacs ckup files
+*~
+
+# Vim backup files
+.*.swp
+.*.swo
+.*.swn
+
