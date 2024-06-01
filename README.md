@@ -1,12 +1,12 @@
 # A Review/Cheat-Sheet of Important Commands
 This is a review of important SQL commands
 
-##  What is SQL 
+## What is SQL 
 SQL or Structured Query Language was initially developed to generate, manipulate and retrieve data from relational databases.
 
 ## Why SQL?
 SQL has stood the test of time, and will continue to do so despite the emergence of new languages/frameworks built for the same purpose. A *database* is an organized collection of accessible data that is (electronically) stored. A *relational database* stores the data into several tables and provides access to data points that are related to one another.
-
+  
 ## Road Map
 
 1. Set up working environment
@@ -492,3 +492,323 @@ MariaDB [sakila]> DESC store;
 
 [DEBAROS, ANTHONY. *Practical SQL*. No Starch Press](https://www.amazon.com/Practical-SQL-Beginners-Guide-Storytelling/dp/1593278276)
 
+
+
+
+## Metadata
+E.g. information about the structure, organization, and constraints of the data. 
+ 
+## Schema Information
+### Tables
+Names, columns, data types, constraints (e.g., primary keys, foreign keys, unique constraints), and relationships between tables.
+### Views
+Definitions of views including the SQL queries that define them.
+### Indexes 
+Information about indexes, including which columns are indexed and the type of index (e.g., B-tree, hash).
+## Columns
+
+### Column Names 
+### Data Types 
+INTEGER, VARCHAR, DATE.
+### Default Values 
+Default values assigned to columns.
+### Constraints
+Constraints applied to columns, such as NOT NULL, UNIQUE, CHECK constraints.
+
+## Keys and Relationships:
+
+### Primary Keys 
+Columns that uniquely identify rows in a table.
+### Foreign Keys 
+Columns that establish relationships between tables.
+### Unique Keys
+Columns that must contain unique values across rows.
+
+
+
+## Procedures and Functions:
+
+### Stored Procedures 
+Definitions and parameters of stored procedures.
+### User-Defined Functions 
+Definitions and parameters of functions.
+
+## Triggers
+
+### Trigger Information: 
+Definitions of triggers, including the timing (BEFORE, AFTER) and the events (INSERT, UPDATE, DELETE) that activate them.
+
+## Security and Permissions:
+
+### Users and Roles: Information about users, roles, and their permissions.
+Privileges: Specific privileges granted to users or roles on database objects (e.g., SELECT, INSERT, UPDATE, DELETE privileges).
+
+## Database Properties:
+
+### Database Name: The name of the database.
+### Character Set: The character set used in the database.
+### Collation: The collation settings used for sorting and comparing textual data.
+
+## Storage Information:
+
+### Tablespaces: Information about tablespaces, which are logical storage units within the database.
+### Files: Details about the physical files that store the database data.
+In SQL, metadata is typically accessed using system catalog tables or views. Different SQL database management systems (DBMS) have their own specific system tables or views for accessing metadata. Here are examples from 
+## some popular DBMS:
+
+### MySQL: Information schema tables such as information_schema.tables, information_schema.columns, and others.
+### PostgreSQL: System catalog tables such as pg_tables, pg_class, pg_attribute, and others.
+### SQL Server: System views like INFORMATION_SCHEMA.TABLES, INFORMATION_SCHEMA.COLUMNS, and others.
+
+
+# Analytic Function
+
+## Analytic Functions or Window Functions
+Perform calculations across a set of table rows that are somehow related to the current row. 
+They allow you to perform complex calculations like moving averages, running totals, and cumulative sums. 
+
+## Common analytic functions include:
+### ROW_NUMBER(): Assigns a unique number to each row within a partition.
+### RANK(): Assigns a rank to each row within a partition, with gaps in ranking when there are ties.
+### DENSE_RANK(): Similar to RANK(), but without gaps in the ranking sequence.
+### NTILE(n): Divides the result set into n approximately equal groups.
+### LAG(): Accesses data from a previous row in the same result set.
+### LEAD(): Accesses data from a subsequent row in the same result set.
+
+
+## DataWindows
+A DataWindow is a powerful data access and presentation component that simplifies retrieving, displaying, and manipulating data from a database.
+
+## Localized Sorting
+Localized sorting refers to sorting data according to the rules and conventions of a specific locale or culture. This involves taking into account language-specific rules for character comparison, accents, and case sensitivity. In SQL databases, localized sorting is often controlled by setting the collation of the columns or the database.
+
+## Ranking Functions
+Ranking functions assign a rank to each row within a result set based on the values of one or more columns. Common ranking functions include:
+
+## ROW_NUMBER(): Providewa unique number for each row.
+### RANK(): Provides a rank with gaps for tied rows.
+### DENSE_RANK(): Provides a rank without gaps.
+### NTILE(n): Divides rows into n number of approximately equal groups.
+
+## Generating Multi-Blue Ranking Reporting Functions
+This term may refer to advanced reporting techniques where multiple ranking functions are used to produce complex ranking reports. These reports might display multiple ranking criteria or visualize rank-based data in a user-friendly way.
+
+## Window Frames
+A window frame in SQL defines the subset of rows to be used in a calculation for each row within the window function. This allows for more precise control over the data being analyzed. The window frame is specified using ROWS or RANGE and can be defined in various ways:
+
+### ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW 
+Includes all rows from the start of the partition to the current row.
+### ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING 
+Includes the previous row, the current row, and the next row.
+
+
+## LAG and LEAD
+### LAG(column, offset, default): Allows access to a value in a previous row without the need for a self-join.
+
+## olumn Value Concatenation
+Concatenating column values involves combining the values of multiple columns into a single column. This can be done using the CONCAT() function or the || operator (depending on the SQL dialect).
+
+
+
+
+## Transactions
+A sequence of one or more SQL operations treated as a single logical unit of work. 
+A transaction must exhibit four key properties known as ACID properties:
+
+1. *Atomicity:* Ensures that all operations within the transaction are completed successfully. If any operation fails, the entire transaction is rolled back.
+
+```sql
+-- Create the accounts table
+CREATE TABLE accounts (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    balance INTEGER NOT NULL
+);
+
+-- Insert some initial data into the accounts table
+INSERT INTO accounts (name, balance) VALUES ('Alice', 1000);
+INSERT INTO accounts (name, balance) VALUES ('Bob', 500);
+
+-- Begin a transaction
+BEGIN TRANSACTION;
+
+-- Try to transfer 200 from Alice's account to Bob's account
+-- First, debit Alice's account
+
+UPDATE accounts
+SET balance = balance - 200
+WHERE name = 'Alice';
+
+-- Next, credit Bob's account
+UPDATE accounts
+SET balance = balance + 200
+WHERE name = 'Bob';
+
+-- Commit the transaction if both updates succeed
+COMMIT;
+
+```
+
+2. *Consistency:* Ensures that a transaction transforms the database from one consistent state to another.
+
+```sql
+-- Create the accounts table
+CREATE TABLE accounts (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    balance INTEGER NOT NULL CHECK (balance >= 0) -- Ensure balance is non-negative
+);
+
+-- Create the transactions table
+CREATE TABLE transactions (
+    id INTEGER PRIMARY KEY,
+    from_account INTEGER NOT NULL,
+    to_account INTEGER NOT NULL,
+    amount INTEGER NOT NULL CHECK (amount > 0), -- Ensure amount is positive
+    FOREIGN KEY (from_account) REFERENCES accounts (id),
+    FOREIGN KEY (to_account) REFERENCES accounts (id)
+);
+
+-- Insert initial data into the accounts table
+INSERT INTO accounts (id, name, balance) VALUES (1, 'Alice', 1000);
+INSERT INTO accounts (id, name, balance) VALUES (2, 'Bob', 500);
+-- Begin a transaction
+BEGIN TRANSACTION;
+
+-- Try to transfer 200 from Alice's account (id=1) to Bob's account (id=2)
+-- First, check if Alice has sufficient balance
+UPDATE accounts
+SET balance = balance - 200
+WHERE id = 1;
+
+-- Check if the update was successful and if Alice's balance is still non-negative
+SELECT CASE
+    WHEN (SELECT balance FROM accounts WHERE id = 1) < 0 THEN RAISE(ROLLBACK, 'Insufficient funds')
+END;
+
+-- If successful, credit Bob's account
+UPDATE accounts
+SET balance = balance + 200
+WHERE id = 2;
+
+-- Log the transaction in the transactions table
+INSERT INTO transactions (from_account, to_account, amount)
+VALUES (1, 2, 200);
+
+-- Commit the transaction
+COMMIT;
+
+```
+
+
+
+
+3. *Isolation:* Ensures that the intermediate state of a transaction is invisible to other transactions until it is complete.
+
+Isolation Levels in SQL
+  * Read Uncommitted: The lowest isolation level, where transactions can see uncommitted changes made by other transactions. This can lead to dirty reads.
+  * Read Committed: Ensures that any data read is committed at the moment it is read. This prevents dirty reads but allows non-repeatable reads and phantom reads.
+  * Repeatable Read: Ensures that if a transaction reads the same data multiple times, it will see the same values each time. This prevents dirty reads and non-repeatable reads but can still allow phantom reads.
+  * Serializable: The highest isolation level, ensuring complete isolation from other transactions. This prevents dirty reads, non-repeatable reads, and phantom reads by ensuring that transactions are serializable (they appear to run sequentially).
+
+
+
+```sql
+-- Create the accounts table
+CREATE TABLE accounts (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    balance INTEGER NOT NULL CHECK (balance >= 0) -- Ensure balance is non-negative
+);
+
+-- Insert some initial data into the accounts table
+INSERT INTO accounts (id, name, balance) VALUES (1, 'Alice', 1000);
+INSERT INTO accounts (id, name, balance) VALUES (2, 'Bob', 500);
+
+BEGIN TRANSACTION;
+
+-- T1: Debit Alice's account by 200
+UPDATE accounts
+SET balance = balance - 200
+WHERE id = 1;
+
+-- Simulate a delay (e.g., WAITFOR in SQL Server or a delay in the application)
+-- This is to simulate a long-running transaction.
+-- For SQLite, you might just wait in the application layer before committing.
+
+-- Continue the transaction
+-- T1: Credit Bob's account by 200
+UPDATE accounts
+SET balance = balance + 200
+WHERE id = 2;
+
+-- Commit the transaction
+COMMIT;
+BEGIN TRANSACTION;
+
+-- T2: Read Alice's balance
+SELECT balance
+FROM accounts
+WHERE id = 1;
+
+-- Simulate some processing time or delay here
+
+-- Commit or rollback transaction
+COMMIT;
+-- Set isolation level to Read Committed (default in many databases)
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+-- Begin Transaction 2
+BEGIN TRANSACTION;
+
+-- T2: Read Alice's balance (will see 1000 if T1 hasn't committed yet)
+SELECT balance
+FROM accounts
+WHERE id = 1;
+
+-- Commit Transaction 2
+COMMIT;
+-- Set isolation level to Serializable
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+-- Begin Transaction 2
+BEGIN TRANSACTION;
+
+-- T2: Read Alice's balance (will wait if T1 is running)
+SELECT balance
+FROM accounts
+WHERE id = 1;
+
+-- Commit Transaction 2
+COMMIT;
+
+```
+
+4. *Durability:* Ensures that once a transaction is committed, the changes are permanent, even in the case of a system failure.
+
+```sql
+
+```
+
+
+## Locking
+Locking is a mechanism used to control concurrent access to database resources to prevent conflicts and ensure data integrity. When a transaction accesses a database resource (e.g., a table or a row), it can acquire different types of locks:
+
+### Shared Lock (S)
+Allows multiple transactions to read a resource concurrently but not modify it.
+### Exclusive Lock (X)
+Allows only one transaction to both read and modify a resource.
+### Update Lock (U)
+Used to avoid deadlock when a transaction intends to update a resource that might later require an exclusive lock.
+
+## Lock Granularities
+Lock granularity refers to the size or scope of the data that a lock covers. It can range from coarse to fine:
+
+### Table-level Lock
+Locks the entire table. It is less granular and may cause contention in high-concurrency environments.
+### Page-level Lock
+Locks a page of rows in the database.
+### Row-level Lock
+Locks individual rows in a table, providing the highest level of concurrency.
+### Column-level Lock
+Rare and typically not used in most RDBMS. It locks specific columns within a row.
